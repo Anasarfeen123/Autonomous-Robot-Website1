@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AWR — System Architecture</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="icon" type="image/png" href="miclogo.png">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+  <canvas id="particle-canvas"></canvas>
+
+  <header>
+    <div class="container">
+      <nav>
+        <div class="logo">
+          <div class="logo-icon">
+            <img src="miclogo.png" alt="MIC Logo" style="width:100%;height:100%;object-fit:contain;">
+          </div>
+          AWR
+        </div>
+        <ul>
+          <li><a href="index.html">Overview</a></li>
+          <li><a href="hardware.html">Hardware</a></li>
+          <li><a href="architecture.html" class="active">Architecture</a></li>
+          <li><a href="industrial.html">Industrial</a></li>
+          <li><a href="team.html">Team</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <section class="container" style="padding-top:40px;">
+      <div class="hero-label">Software Design — Control Architecture</div>
+      <div class="callout">
+        Structured around a <strong>Model-View-Controller</strong> pattern and a layered <strong>ROS 2 node graph</strong>. All navigation input comes from the <strong>360° LiDAR</strong>; box and item identification runs on a dedicated <strong>camera recognition pipeline</strong> in a fully parallel ROS 2 node. The MVC layer and simulation stack are <strong>fully implemented</strong>.
+      </div>
+    </section>
+
+    <!-- CONTROL PIPELINE -->
+    <section class="container">
+      <div class="section-header"><h2>Planned Real-Time Control Pipeline</h2></div>
+      <div class="card-solo">
+        <h3><i class="fas fa-stream"></i> Hardware-to-Motor Signal Flow</h3>
+        <div class="callout blue" style="margin-bottom:18px;font-size:0.82rem;">
+          <strong>Design Status:</strong> Fully designed and validated in simulation. ROS 2 node wiring will be implemented during hardware integration.
+        </div>
+
+        <div class="pipeline">
+
+          <div class="pipeline-step">
+            <div class="flow-pulse"></div>
+            <div class="p-badge">360° LiDAR / IMU</div>
+            <div class="p-desc">Raw LiDAR scans (~8,000 points/rev at 10 Hz) and IMU readings arrive via USB and I²C. The <strong>Sensor Bridge Node</strong> normalises, timestamps, and publishes each scan to the ROS 2 graph as <code>/awr/scan</code> and <code>/awr/imu</code>.</div>
+          </div>
+
+          <div class="pipeline-step">
+            <div class="flow-pulse"></div>
+            <div class="p-badge">EKF State Estimator</div>
+            <div class="p-desc">Wheel encoder odometry, IMU yaw, and LiDAR-derived displacement are fused via <strong>Extended Kalman Filter</strong> at 100 Hz — producing a smooth pose estimate that corrects for wheel slip and rotational drift. Published as <code>/awr/odom</code>.</div>
+          </div>
+
+          <div class="pipeline-step">
+            <div class="flow-pulse"></div>
+            <div class="p-badge">PPO Policy Node</div>
+            <div class="p-desc">The <strong>PPO v6.2 policy</strong> receives the fused state vector (pose + LiDAR obstacle map) and outputs a continuous velocity command at 10–20 Hz. Inference runs entirely on the Raspberry Pi — no network dependency. Published as <code>/awr/cmd_vel_raw</code>.</div>
+          </div>
+
+          <div class="pipeline-step">
+            <div class="flow-pulse"></div>
+            <div class="p-badge green">Safety Guard Node</div>
+            <div class="p-desc">A <strong>deterministic override layer</strong> clips any velocity command that would result in a collision given the current LiDAR braking distance. Operates independently of the RL policy and <strong>cannot be disabled</strong>. Published as <code>/awr/cmd_vel</code>.</div>
+          </div>
+
+          <div class="pipeline-step">
+            <div class="p-badge green">L298N Motor Driver</div>
+            <div class="p-desc">Safe, validated PWM signals are written to the motor driver. Left and right wheel speeds are set independently — enabling smooth differential steering through tight warehouse aisles.</div>
+          </div>
+
+        </div>
+
+        <!-- Camera pipeline callout -->
+        <div class="callout blue" style="margin-top:24px;font-size:0.88rem;">
+          <strong><i class="fas fa-camera" style="margin-right:8px;"></i>Parallel Vision Pipeline — Independent of Navigation:</strong>
+          The Pi Camera runs a <strong>dedicated Tiny-YOLO recognition node</strong> at 5–10 Hz in parallel with the entire navigation stack above. It publishes detected box labels, SKUs, and item classes to <code style="color:var(--blue);background:var(--blue-dim);padding:1px 6px;">/awr/items_detected</code> — neither pipeline blocks the other.
+        </div>
+      </div>
+    </section>
+
+    <!-- MVC -->
+    <section class="container">
+      <div class="section-header"><h2>Software MVC Layout — Implemented</h2></div>
+      <div class="grid">
+        <div class="card" data-num="M">
+          <div class="card-indicator"></div>
+          <h3><i class="fas fa-database"></i> Models — Core Logic</h3>
+          <ul>
+            <li><strong>agent.py</strong> — PPO training &amp; inference wrapper</li>
+            <li><strong>environment.py</strong> — Gymnasium sim manager</li>
+            <li><strong>training.py</strong> — Hyperparameters &amp; curriculum stages</li>
+            <li><strong>safety.py</strong> — LiDAR braking constraint enforcement</li>
+          </ul>
+          <div style="margin-top:14px;">
+            <span class="tag green">Implemented</span>
+            <span class="tag amber">Stable-Baselines3</span>
+            <span class="tag">Gymnasium</span>
+          </div>
+        </div>
+        <div class="card" data-num="C">
+          <div class="card-indicator"></div>
+          <h3><i class="fas fa-project-diagram"></i> Controllers — Orchestration</h3>
+          <ul>
+            <li><strong>TrainingController</strong> — Runs curriculum learning stages</li>
+            <li><strong>EvalController</strong> — Validates policy across test maps</li>
+            <li><strong>ManualController</strong> — WASD keyboard override for testing</li>
+            <li><strong>ROSBridgeController</strong> — Designed for hardware relay</li>
+          </ul>
+          <div style="margin-top:14px;">
+            <span class="tag green">Implemented</span>
+            <span class="tag amber">ROS 2 Humble</span>
+            <span class="tag">Python 3.11</span>
+          </div>
+        </div>
+        <div class="card" data-num="V">
+          <div class="card-indicator"></div>
+          <h3><i class="fas fa-desktop"></i> Views — Output Layer</h3>
+          <ul>
+            <li><strong>WarehouseRenderer</strong> — Matplotlib / Pygame sim display</li>
+            <li><strong>ConsoleDisplayer</strong> — Structured terminal telemetry</li>
+            <li><strong>TelemetryDash</strong> — Real-time reward &amp; accuracy overlay</li>
+          </ul>
+          <div style="margin-top:14px;">
+            <span class="tag green">Implemented</span>
+            <span class="tag">Matplotlib</span>
+            <span class="tag">Pygame</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ROS 2 STACK -->
+    <section class="container" style="margin-bottom:50px;">
+      <div class="section-header"><h2>ROS 2 Node Stack — Design</h2></div>
+      <div class="terminal-window">
+        <div class="terminal-header">
+          <div class="dot red"></div><div class="dot yellow"></div><div class="dot green"></div>
+          <span class="terminal-title">awr-node: ~/ros2_ws — ros2 launch awr_bringup full_stack.launch.py</span>
+        </div>
+        <div class="terminal-body" style="color:var(--text);">
+          <code style="display:block;color:var(--accent);margin-bottom:14px;">$ ros2 launch awr_bringup full_stack.launch.py</code>
+
+          <code style="display:block;color:var(--text-muted);margin-bottom:2px;font-size:0.68rem;letter-spacing:1px;">── NAVIGATION STACK ─────────────────────────────────</code>
+
+          <code style="display:block;color:var(--text-muted);margin-bottom:3px;">[NAV L1]  /awr/sensor_bridge      →  10 Hz LiDAR + 100 Hz IMU</code>
+          <code style="display:block;margin-bottom:12px;">          360° point cloud + IMU  → /awr/scan   /awr/imu</code>
+
+          <code style="display:block;color:var(--text-muted);margin-bottom:3px;">[NAV L2]  /awr/state_estimator    →  100 Hz</code>
+          <code style="display:block;margin-bottom:12px;">          EKF (LiDAR + IMU + enc) → /awr/odom</code>
+
+          <code style="display:block;color:var(--text-muted);margin-bottom:3px;">[NAV L3]  /awr/policy_node        →  10–20 Hz</code>
+          <code style="display:block;margin-bottom:12px;color:var(--accent);">          PPO v6.2 inference       → /awr/cmd_vel_raw</code>
+
+          <code style="display:block;color:var(--text-muted);margin-bottom:3px;">[NAV L4]  /awr/safety_guard       →  deterministic</code>
+          <code style="display:block;color:var(--green);margin-bottom:18px;">          LiDAR braking override   → /awr/cmd_vel  ✓  ZERO-COLLISION</code>
+
+          <code style="display:block;color:var(--text-muted);margin-bottom:2px;font-size:0.68rem;letter-spacing:1px;">── VISION STACK  (parallel, fully independent) ───────</code>
+
+          <code style="display:block;color:var(--text-muted);margin-bottom:3px;">[VIS L1]  /awr/vision_node        →  5–10 Hz  (does not block NAV)</code>
+          <code style="display:block;color:var(--blue);">          Tiny-YOLO cam pipeline   → /awr/items_detected  📦  BOX &amp; ITEM ID</code>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <div class="status-bar">
+    <div class="status-item green"><i class="fas fa-layer-group"></i> MVC Complete</div>
+    <div class="status-item amber"><div class="status-dot" style="background:var(--accent);box-shadow:0 0 6px var(--accent-glow);"></div> ROS 2: Awaiting HW</div>
+    <div class="status-item clock"></div>
+  </div>
+  <script src="script.js"></script>
+</body>
+</html>
