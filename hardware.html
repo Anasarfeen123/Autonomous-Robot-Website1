@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>AWR — Hardware</title>
   <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="style-v2.css">
   <link rel="icon" type="image/png" href="miclogo.png">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
@@ -39,42 +40,50 @@
       </div>
     </section>
 
-    <!-- LIDAR HERO STRIP -->
+    <!-- LIDAR STATS GRID (replaces canvas simulation) -->
     <section class="container">
       <div class="section-header"><h2>360° Environmental Awareness — LiDAR</h2></div>
-      <div class="lidar-hero">
-        <!-- Canvas fills left column -->
-        <div style="position:relative;">
-          <canvas class="lidar-canvas" style="display:block;width:100%;height:280px;"></canvas>
-          <div class="lidar-live">LIDAR SIMULATION</div>
+
+      <div class="lidar-header-card">
+        <div class="lhc-title">
+          <span class="lhc-badge"><i class="fas fa-broadcast-tower"></i></span>
+          <div>
+            <div class="lhc-name">RPLIDAR A1 / A2</div>
+            <div class="lhc-subtitle">Primary Navigation Sensor</div>
+          </div>
         </div>
-        <!-- Stats fill right column -->
-        <div class="lidar-meta">
-          <div class="lidar-meta-title">RPLIDAR A1 / A2<br>Navigation Sensor</div>
-          <div class="lidar-stat-row">
-            <div class="lidar-stat">
-              <span class="lidar-stat-val" data-target="360" data-suffix="°">0°</span>
-              <span class="lidar-stat-lbl">Full sweep coverage<br>no blind spots</span>
-            </div>
-            <div class="lidar-stat">
-              <span class="lidar-stat-val" data-target="12" data-suffix=" m">0 m</span>
-              <span class="lidar-stat-lbl">Maximum detection<br>range in open aisle</span>
-            </div>
-            <div class="lidar-stat">
-              <span class="lidar-stat-val" data-target="8" data-suffix="k">0k</span>
-              <span class="lidar-stat-lbl">Sample points per<br>revolution at 10 Hz</span>
-            </div>
-            <div class="lidar-stat">
-              <span class="lidar-stat-val" data-target="10" data-suffix=" Hz">0 Hz</span>
-              <span class="lidar-stat-lbl">Scan rate — full<br>environment refresh</span>
-            </div>
-          </div>
-          <div class="lidar-badge-row">
-            <span class="lidar-tag">EKF Fused</span>
-            <span class="lidar-tag">USB 2.0</span>
-            <span class="lidar-tag">Point Cloud</span>
-            <span class="lidar-tag">SLAM Ready</span>
-          </div>
+        <div class="lhc-tags">
+          <span class="lidar-tag">EKF Fused</span>
+          <span class="lidar-tag">USB 2.0</span>
+          <span class="lidar-tag">Point Cloud</span>
+          <span class="lidar-tag">SLAM Ready</span>
+        </div>
+      </div>
+
+      <div class="lidar-stats-grid">
+        <div class="lidar-stat-card">
+          <div class="lsc-icon amber"><i class="fas fa-sync-alt"></i></div>
+          <div class="lsc-val amber" data-target="360" data-suffix="°">0°</div>
+          <div class="lsc-label">Full sweep coverage</div>
+          <div class="lsc-sub">no blind spots</div>
+        </div>
+        <div class="lidar-stat-card">
+          <div class="lsc-icon amber"><i class="fas fa-ruler-horizontal"></i></div>
+          <div class="lsc-val amber" data-target="12" data-suffix=" m">0 m</div>
+          <div class="lsc-label">Max detection range</div>
+          <div class="lsc-sub">in open aisle</div>
+        </div>
+        <div class="lidar-stat-card">
+          <div class="lsc-icon amber"><i class="fas fa-dot-circle"></i></div>
+          <div class="lsc-val amber">~8k</div>
+          <div class="lsc-label">Sample points / rev</div>
+          <div class="lsc-sub">at 10 Hz scan rate</div>
+        </div>
+        <div class="lidar-stat-card">
+          <div class="lsc-icon amber"><i class="fas fa-tachometer-alt"></i></div>
+          <div class="lsc-val amber" data-target="10" data-suffix=" Hz">0 Hz</div>
+          <div class="lsc-label">Full scan rate</div>
+          <div class="lsc-sub">environment refresh</div>
         </div>
       </div>
     </section>

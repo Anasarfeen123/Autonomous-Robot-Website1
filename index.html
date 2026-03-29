@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>AWR — Autonomous Warehouse Robot</title>
   <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="style-v2.css">
   <link rel="icon" type="image/png" href="miclogo.png">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
@@ -36,16 +37,17 @@
     <section class="hero-section container">
       <div class="hero-label">Autonomous Warehouse Robot — Simulation &amp; RL Complete</div>
 
-      <div class="hero-grid">
-        <!-- Left: Text content -->
-        <div class="hero">
+      <div class="hero-grid-v2">
+        <div class="hero-headline-col">
           <h1>Trained to<br>
             <em class="glitch" data-text="Navigate.">Navigate.</em><br>
             <span class="outline">Built to Scale.</span>
           </h1>
+          <div class="hero-accent-bar"></div>
+        </div>
+        <div class="hero-copy-col">
           <p class="hero-sub">PPO v6.2 · Curriculum RL · Gymnasium · ROS 2 Architecture</p>
           <p>A simulation-first autonomous navigation system for warehouse environments. The RL policy and full software stack are complete and validated. <strong>360° LiDAR</strong> drives all navigation; a dedicated <strong>camera pipeline</strong> handles box and item recognition. Hardware integration is the next phase.</p>
-
           <div class="sensor-pills">
             <div class="sensor-pill">
               <div class="sp-icon amber"><i class="fas fa-broadcast-tower"></i></div>
@@ -62,69 +64,38 @@
               </div>
             </div>
           </div>
-
-          <div class="spec-strip">
-            <div class="spec-cell">
-              <span class="s-label">Model</span>
-              <span class="s-value">v6.2</span>
-            </div>
-            <div class="spec-cell">
-              <span class="s-label">Nav Accuracy</span>
-              <span class="s-value amber" data-target="92" data-suffix="%">0%</span>
-            </div>
-            <div class="spec-cell">
-              <span class="s-label">Algorithm</span>
-              <span class="s-value" style="font-size:1rem;">PPO/SB3</span>
-            </div>
-            <div class="spec-cell">
-              <span class="s-label">Inference</span>
-              <span class="s-value blue" data-target="15" data-suffix=" Hz">0 Hz</span>
-            </div>
-            <div class="spec-cell">
-              <span class="s-label">Collisions</span>
-              <span class="s-value green">ZERO</span>
-            </div>
-          </div>
-
-          <div class="terminal-window">
-            <div class="terminal-header">
-              <div class="dot red"></div><div class="dot yellow"></div><div class="dot green"></div>
-              <span class="terminal-title">awr@sim-node: ~/awr/AI — bash</span>
-            </div>
-            <div class="terminal-body"></div>
-          </div>
         </div>
+      </div>
 
-        <!-- Right: Live HUD -->
-        <div class="hud-panel">
-          <div class="hud-section">
-            <div class="hud-header">
-              <span>360° LiDAR — Navigation</span>
-              <div class="hud-status"><div class="hud-status-dot"></div>SCANNING</div>
-            </div>
-            <div class="lidar-canvas-wrap" style="height:240px;">
-              <canvas class="lidar-canvas"></canvas>
-              <div class="lidar-live">LIDAR ACTIVE</div>
-              <div class="lidar-readouts">
-                <span class="lidar-readout">360°</span>
-                <span class="lidar-readout">~8k pts/rev</span>
-                <span class="lidar-readout">12 m range</span>
-              </div>
-            </div>
-          </div>
-          <div class="hud-section">
-            <div class="hud-header blue">
-              <span>Camera — Item Recognition</span>
-              <div class="hud-status"><div class="hud-status-dot"></div>DETECTING</div>
-            </div>
-            <div class="cam-feed-wrap" style="height:200px;">
-              <canvas class="cam-canvas"></canvas>
-              <span class="cam-label">YOLO FEED</span>
-              <div class="cam-corner tl"></div><div class="cam-corner tr"></div>
-              <div class="cam-corner bl"></div><div class="cam-corner br"></div>
-            </div>
-          </div>
+      <div class="spec-strip">
+        <div class="spec-cell">
+          <span class="s-label">Model</span>
+          <span class="s-value">v6.2</span>
         </div>
+        <div class="spec-cell">
+          <span class="s-label">Nav Accuracy</span>
+          <span class="s-value amber" data-target="92" data-suffix="%">0%</span>
+        </div>
+        <div class="spec-cell">
+          <span class="s-label">Algorithm</span>
+          <span class="s-value" style="font-size:1rem;">PPO/SB3</span>
+        </div>
+        <div class="spec-cell">
+          <span class="s-label">Inference</span>
+          <span class="s-value blue" data-target="15" data-suffix=" Hz">0 Hz</span>
+        </div>
+        <div class="spec-cell">
+          <span class="s-label">Collisions</span>
+          <span class="s-value green">ZERO</span>
+        </div>
+      </div>
+
+      <div class="terminal-window">
+        <div class="terminal-header">
+          <div class="dot red"></div><div class="dot yellow"></div><div class="dot green"></div>
+          <span class="terminal-title">awr@sim-node: ~/awr/AI — bash</span>
+        </div>
+        <div class="terminal-body"></div>
       </div>
     </section>
 
@@ -137,6 +108,42 @@
         </video>
         <div class="video-overlay"><pre>STATUS: MISSION_SUCCESS&#10;ACCURACY: 92.0 %&#10;COLLISIONS: 0</pre></div>
         <div class="video-badge">SIM</div>
+      </div>
+    </section>
+
+    <!-- METRICS BAND -->
+    <section class="container">
+      <div class="section-header"><h2>Policy Performance</h2></div>
+      <div class="metrics-band">
+        <div class="metric-block">
+          <div class="mb-val amber" data-target="92" data-suffix="%">0%</div>
+          <div class="mb-label">Navigation Accuracy</div>
+          <div class="mb-sub">across 6 sim levels</div>
+        </div>
+        <div class="metric-sep"></div>
+        <div class="metric-block">
+          <div class="mb-val green">ZERO</div>
+          <div class="mb-label">Collisions</div>
+          <div class="mb-sub">hard safety guarantee</div>
+        </div>
+        <div class="metric-sep"></div>
+        <div class="metric-block">
+          <div class="mb-val blue" data-target="15" data-suffix=" Hz">0 Hz</div>
+          <div class="mb-label">Inference Rate</div>
+          <div class="mb-sub">on-device, no network</div>
+        </div>
+        <div class="metric-sep"></div>
+        <div class="metric-block">
+          <div class="mb-val" data-target="6" data-suffix="">0</div>
+          <div class="mb-label">Difficulty Levels</div>
+          <div class="mb-sub">curriculum training stages</div>
+        </div>
+        <div class="metric-sep"></div>
+        <div class="metric-block">
+          <div class="mb-val amber">360°</div>
+          <div class="mb-label">LiDAR Coverage</div>
+          <div class="mb-sub">zero blind spots</div>
+        </div>
       </div>
     </section>
 
